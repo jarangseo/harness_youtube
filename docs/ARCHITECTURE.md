@@ -5,7 +5,7 @@
 src/
 ├── app/
 │   ├── page.tsx                    # 메인: URL 입력 + 히스토리
-│   ├── report/[id]/page.tsx        # 리포트 상세
+│   ├── report/page.tsx             # 리포트 상세 (?id=... 쿼리 파라미터)
 │   ├── settings/page.tsx           # API key 관리
 │   ├── onboarding/page.tsx         # 첫 방문 안내
 │   └── layout.tsx
@@ -94,7 +94,7 @@ src/
     ↓
 [11. LocalStorage 저장]    ─ lib/storage/reports.ts
     ↓
-[12. /report/[id] 이동]
+[12. /report?id=... 이동]
 ```
 
 각 단계는 `progress` 머신의 한 상태로 표현되며, 사용자는 현재 단계와 진행률(N/M)을 본다.
@@ -436,7 +436,7 @@ type AnalyzeError =
 
 ## 21. 성능 최적화
 
-- 메인 페이지 코드 스플리팅: `report/[id]` 라우트는 dynamic import
+- 메인 페이지 코드 스플리팅: `report` 라우트는 dynamic import (정적 export 호환 위해 `?id=...` 쿼리 파라미터 사용)
 - 사이드바 가상 스크롤 (리포트 1,000개 이상 시) — 1차에는 불필요
 - 이미지: `i.ytimg.com` 썸네일은 `loading="lazy"`
 - Tailwind 4 JIT으로 사용된 클래스만 번들

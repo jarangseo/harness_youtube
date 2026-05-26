@@ -1,0 +1,11 @@
+{
+  "app.title": "댓글거울",
+  "header.locale.ko": "한국어",
+  "header.locale.en": "English",
+  "nav.home": "홈",
+  "nav.settings": "설정",
+  "nav.onboarding": "시작하기",
+  "common.cancel": "취소",
+  "common.confirm": "확인",
+  "report.empty": "리포트를 찾을 수 없습니다"
+}
