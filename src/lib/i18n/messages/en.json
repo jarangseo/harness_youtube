@@ -1,0 +1,11 @@
+{
+  "app.title": "Comment Mirror",
+  "header.locale.ko": "한국어",
+  "header.locale.en": "English",
+  "nav.home": "Home",
+  "nav.settings": "Settings",
+  "nav.onboarding": "Get started",
+  "common.cancel": "Cancel",
+  "common.confirm": "Confirm",
+  "report.empty": "Report not found"
+}
