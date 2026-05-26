@@ -24,7 +24,7 @@
       "status": "completed",
       "started_at": "2026-05-26T20:43:05+0900",
       "summary": "next-intl 3.x 설치. lib/i18n/{config.ts, index.ts, messages/{ko,en}.json} 구현, components/i18n/LocaleProvider.tsx + useLocale 훅 추가. config 및 messages 테스트 TDD로 작성, 모두 통과.",
-      "completed_at": "2026-05-26T20:46:30+0900"
+      "completed_at": "2026-05-26T20:47:17+0900"
     },
     {
       "step": 3,
