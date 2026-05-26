@@ -50,7 +50,12 @@ src/
 │   ├── id.ts                       # nanoid 래퍼
 │   ├── retry.ts                    # exponential backoff
 │   ├── lock.ts                     # 동시 분석 방지
-│   └── logger.ts                   # devmode 로깅 (key 마스킹 포함)
+│   ├── logger.ts                   # devmode 로깅 (key 마스킹 포함)
+│   └── i18n/
+│       ├── config.ts               # locale 감지·전환 로직
+│       └── messages/
+│           ├── ko.json             # 한국어 (기본)
+│           └── en.json             # 영어
 └── services/
     └── analyze.ts                  # 전체 파이프라인 오케스트레이션
 ```
@@ -205,13 +210,15 @@ export type Report = {
 - **temperature**: 0.2 (결정성 우선)
 - **max_tokens**: 4000
 
-### 6.2 단계 B — 종합 (단일 호출, 모델: claude-sonnet-4-6)
+### 6.2 단계 B — 종합 (단일 호출, 모델: claude-haiku-4-5)
 - 입력: 청크별 결과 + 비디오 메타 + 대표 댓글 인용 후보
 - 출력: strengths / improvements / actionItems / summary / 최종 topics
 - 인용은 `commentId` 참조로만 받고, 클라이언트에서 원문 매핑
 - **응답 스키마**: `Report`에서 `video`/`stats`/`sentiment`/`cost`/`modelUsed` 제외한 부분
 - **temperature**: 0.3
 - **max_tokens**: 2000
+- **언어**: 인터페이스 언어(ko/en)에 맞춰 출력 (system 프롬프트에 `Output language: {locale}` 명시)
+- **참고**: 종합도 Haiku 4.5 단일 모델 사용 (비용 최소화, ADR-002 참조). 추론·비교가 약하므로 프롬프트는 "정리·요약" 톤으로 구성하고, 예시 1~2개를 in-context로 제공.
 
 ### 6.3 프롬프트 캐싱
 - 단계 A의 system 프롬프트는 `cache_control: ephemeral`로 캐싱
@@ -252,17 +259,20 @@ export type Report = {
 
 | 항목 | 값 |
 |------|-----|
+| 모델 | claude-haiku-4-5 (전 단계 단일) |
 | 청크 크기 | 100개 댓글 |
 | 청크 수 (500 댓글 기준) | 5개 |
 | 청크당 평균 입력 토큰 | ~6,000 (댓글 평균 60토큰 가정) |
 | 청크당 평균 출력 토큰 | ~1,500 |
 | 종합 단계 입력 토큰 | ~5,000 |
 | 종합 단계 출력 토큰 | ~1,200 |
-| 총 토큰 (입력 + 출력) | ~45,000 |
-| Haiku 4.5 단가 (가정) | $1/MTok in, $5/MTok out |
-| 예상 비용 (500 댓글) | $0.03~$0.05 |
+| 총 입력 토큰 | ~35,000 |
+| 총 출력 토큰 | ~8,700 |
+| Haiku 4.5 단가 (가정) | $1/MTok input, $5/MTok output |
+| 캐시 적용 후 입력 단가 | ~$0.10/MTok (system 프롬프트 캐시 hit 시) |
+| 예상 비용 (500 댓글) | **$0.02~$0.04** |
 
-수치는 가정이며 실제 단가 변동 시 `lib/claude/costEstimate.ts`에서 조정.
+수치는 가정이며 실제 단가 변동 시 `lib/claude/costEstimate.ts`에서 조정. 모델을 종합 단계만 Sonnet으로 업그레이드하는 옵션을 추후 추가할 수 있도록 `modelUsed`를 Report에 저장.
 
 ## 10. 재시도 / 백오프
 
@@ -439,7 +449,25 @@ type AnalyzeError =
 - `prefers-reduced-motion: reduce`에 fade-in 끔
 - 키보드 단축키: `Cmd/Ctrl + Enter`로 분석 시작
 
-## 23. 외부 의존성
+## 23. 국제화 (i18n)
+
+- 지원 언어: 한국어(`ko`, 기본) / 영어(`en`)
+- 라이브러리: `next-intl` (App Router 호환, 정적 export 지원)
+- 메시지 파일: `lib/i18n/messages/{locale}.json` — flat key 구조
+- 감지 순서:
+  1. LocalStorage `cm:locale`
+  2. `navigator.language` 첫 토큰 (`ko-KR` → `ko`)
+  3. 기본값 `ko`
+- 사용자 토글: 헤더에 `KO | EN` 텍스트 토글, 클릭 시 LocalStorage에 저장 후 라우터 refresh
+- Claude 출력 언어:
+  - 종합 단계 system 프롬프트에 `Respond in {locale}.` 명시
+  - 청크별 분석은 분류 작업이라 영향 없음 (영어 토픽 이름이 와도 종합 단계에서 locale에 맞춰 정리)
+- 인용 댓글: 항상 원문 유지 (번역 안 함)
+- 날짜·숫자: `Intl.DateTimeFormat` / `Intl.NumberFormat`로 locale 자동 반영
+- 비용 표시 USD 고정 (환율 변환 안 함, ADR-020)
+- 키 누락: 빌드 시 ESLint 룰로 양쪽 파일 키 일치 검증
+
+## 24. 외부 의존성
 
 | 라이브러리 | 용도 | 버전 |
 |-----------|------|------|
@@ -452,5 +480,6 @@ type AnalyzeError =
 | vitest | 단위 테스트 | 1.x |
 | @testing-library/react | 컴포넌트 테스트 | latest |
 | msw | API 모킹 | 2.x |
+| next-intl | i18n (ko/en) | 3.x |
 
 YouTube Data API는 SDK 없이 `fetch` 직접.
