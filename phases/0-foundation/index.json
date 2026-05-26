@@ -7,7 +7,8 @@
       "name": "project-setup",
       "status": "completed",
       "started_at": "2026-05-26T20:37:32+0900",
-      "summary": "Next 15 App Router + TS strict(noUncheckedIndexedAccess) + Tailwind 4 + pnpm 셋업 완료. next.config.ts에 output:export 적용. CLAUDE.md 명령어 pnpm으로 갱신. 정적 빌드 산출물 out/ 확인."
+      "summary": "Next 15 App Router + TS strict(noUncheckedIndexedAccess) + Tailwind 4 + pnpm 셋업 완료. next.config.ts에 output:export 적용. CLAUDE.md 명령어 pnpm으로 갱신. 정적 빌드 산출물 out/ 확인.",
+      "completed_at": "2026-05-26T20:41:20+0900"
     },
     {
       "step": 1,
