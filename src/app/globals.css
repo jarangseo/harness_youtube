@@ -1,1 +1,37 @@
 @import "tailwindcss";
+
+@theme {
+  --color-bg-page: #0a0a0a;
+  --color-bg-card: #141414;
+  --color-bg-input: #1a1a1a;
+  --color-sentiment-positive: #22c55e;
+  --color-sentiment-negative: #ef4444;
+  --color-sentiment-neutral: #525252;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: var(--color-bg-page);
+  color: white;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
