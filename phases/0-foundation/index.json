@@ -16,7 +16,7 @@
       "status": "completed",
       "started_at": "2026-05-26T20:41:20+0900",
       "summary": "Vitest + jsdom + RTL + MSW 셋업 완료. src/test/{setup,mocks/server,mocks/handlers,sanity.test,sanity-render.test} 생성. pnpm test 2 passed.",
-      "completed_at": "2026-05-26T20:42:50+0900"
+      "completed_at": "2026-05-26T20:43:05+0900"
     },
     {
       "step": 2,
